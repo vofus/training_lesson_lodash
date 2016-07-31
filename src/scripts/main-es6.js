@@ -1,21 +1,26 @@
 ;(function() {
 	'use strict';
 
+	/* ================== Begin Classes ================== */
 	class Painter {
 		constructor(arrOfCities) {
 			this.arrOfCities = arrOfCities;
 		}
-		refresh() {
+		refresh() { // Перерисовка шаблона
 			let templateHtml = document.getElementById('template').innerHTML,
-				templateHtmlMinify = document.getElementById('template-minify').innerHTML,
+				templateHtmlMinify = document.getElementById('templateMinify').innerHTML,
 				compiled = _.template(templateHtml),
-				compiledMinify = _.template(templateHtmlMinify);
-			if(document.getElementById('minify-table').style.display === 'none' && document.getElementById('city_table').style.display === 'block') {
-				document.getElementById("city_table__body").innerHTML = compiled({items: this.arrOfCities});
+				compiledMinify = _.template(templateHtmlMinify),
+				minTable = document.getElementById('minifyTable'),
+				fullTable = document.getElementById('cityTable'),
+				tableBody = document.getElementById("cityTableBody");
+
+			if(minTable.classList.contains('hidden') && !fullTable.classList.contains('hidden')) {
+				tableBody.innerHTML = compiled({items: this.arrOfCities});
 			} else {
-				document.getElementById("minify-table").innerHTML = compiledMinify({items: this.arrOfCities});
+				minTable.innerHTML = compiledMinify({items: this.arrOfCities});
 			}
-		}
+		} // refresh
 	}
 
 	class CitiesManager {
@@ -24,9 +29,9 @@
 		}
 		addCity(nameArg, streetArg, countHousesArg) {
 			let id = genId.next().value,
-			    name = nameArg || document.querySelector(".form-city").value,
-			    street = streetArg || document.querySelector(".form-street").value,
-			    countHouses = countHousesArg || document.querySelector(".form-count-houses").value;
+			    name = nameArg || document.getElementById('form-city').value,
+			    street = streetArg || document.getElementById('form-street').value,
+			    countHouses = countHousesArg || document.getElementById('form-count-houses').value;
 			
 			let newCity = new City(id, name, street, countHouses);
 
@@ -46,7 +51,7 @@
 					minId = arr[index].id;
 				}
 			});
-			document.getElementById(`${minId}`).style.background = 'pink';
+			document.getElementById(`${minId}`).classList.add('min');
 		}
 		findMax() {
 			let max = this.arrOfCities[0].countHouses,
@@ -57,7 +62,7 @@
 					maxId = arr[index].id;
 				}
 			});
-			document.getElementById(`${maxId}`).style.background = 'green';
+			document.getElementById(`${maxId}`).classList.add('max');
 		}
 		get() {
 			return this.arrOfCities;
@@ -72,73 +77,82 @@
 			this.countHouses = countHouses;
 		}
 	}
+	/* ==================== End Classes ==================== */
 
-	let genId = generateId();
-
-	let test = new CitiesManager();
-
-	let painter = new Painter(test.get());
-
+	let genId = generateId(),                   // создаем генератор
+		manager = new CitiesManager(),			// создаем объект класса CityManager
+		painter = new Painter(manager.get());	// создаем объект класса Painter
 
 
-	test.addCity('Samara', 'Lenina', 45);
-	test.addCity('Togliatti', 'Zavodskaya', 67);
-	test.addCity('Chapaevsk', 'Zheleznodorozhnaya', 37);
+	/* ================ Тестовые данные ================ */
+	manager.addCity('Samara', 'Lenina', 45);
+	manager.addCity('Togliatti', 'Zavodskaya', 67);
+	manager.addCity('Chapaevsk', 'Zheleznodorozhnaya', 37);
+	/* ================ =============== ================ */
 
-	painter.refresh();
-	addEvent();
+	painter.refresh();        // отрисовываем таблицу
+	removeBtnsAddListener();  // навешиваем обработчик на кнопки "Remove"
 
-	let minBtn = document.querySelector('.find-min'),
-		maxBtn = document.querySelector('.find-max');
+	let minBtn = document.getElementById('find-min'),
+		maxBtn = document.getElementById('find-max'),
+		addBtn = document.getElementById('addCity'),
+		minifyBtn = document.getElementById('minify-btn');
 
-		minBtn.addEventListener("click", function(event) {
-			event.preventDefault();
-			test.findMin();
-		});
+	/* === Навешиваем обработчики на кнопки === */
+	minBtn.addEventListener("click", (event) => {
+		event.preventDefault();
+		manager.findMin();
+	});
 
-		maxBtn.addEventListener("click", function(event) {
-			event.preventDefault();
-			test.findMax();
-		});
+	maxBtn.addEventListener("click", (event) => {
+		event.preventDefault();
+		manager.findMax();
+	});
 
-	let addBtn = document.querySelector("#add-element input[type=submit]");
-		addBtn.addEventListener("click", function(event) {
-			event.preventDefault();
-			test.addCity();
-			painter.refresh();
-			addEvent();
-		});
+	addBtn.addEventListener("click", (event) => {
+		event.preventDefault();
+		manager.addCity();
+		painter.refresh();
+		removeBtnsAddListener();
+	});
 
-	let minifyBtn = document.querySelector('.minify-btn');
-		minifyBtn.addEventListener("click", function(event) {
-			event.preventDefault();
-			if (this.innerHTML === 'Compact version') {
-				this.innerHTML = 'Full version';
-				document.getElementById('minify-table').style.display = 'block';
-				document.getElementById('city_table').style.display = 'none';
-			} else {
-				this.innerHTML = 'Compact version';
-				document.getElementById('minify-table').style.display = 'none';
-				document.getElementById('city_table').style.display = 'block';
-			}
-			painter.refresh();
-			addEvent();
-		});
+	minifyBtn.addEventListener("click", (event) => {
+		event.preventDefault();
+		let minTable = document.getElementById('minifyTable'),
+			fullTable = document.getElementById('cityTable');
+		if (!event.target.classList.contains('minify')) {
+			event.target.classList.add('minify');
+			event.target.innerHTML = 'Full version';
+			minTable.classList.remove('hidden');
+			fullTable.classList.add('hidden');
+			minBtn.classList.add('hidden');
+			maxBtn.classList.add('hidden');
+		} else {
+			event.target.classList.remove('minify');
+			event.target.innerHTML = 'Compact version';
+			minTable.classList.add('hidden');
+			fullTable.classList.remove('hidden');
+			minBtn.classList.remove('hidden');
+			maxBtn.classList.remove('hidden');
+		}
+		painter.refresh();
+		removeBtnsAddListener();
+	});
 	
 	
-	function addEvent() {
+	function removeBtnsAddListener() {
 		let removeBtns = document.getElementsByClassName('remove-btn');
-
 		for(let i=0; i<removeBtns.length; i++) {
-			removeBtns[i].addEventListener('click', function(event) {
+			removeBtns[i].addEventListener('click', (event) => {
 				event.preventDefault();
-				test.removeCity(+this.parentElement.parentElement.id);
+				manager.removeCity(+event.target.parentElement.parentElement.id);
 				painter.refresh();
-				addEvent();
+				removeBtnsAddListener();
 			});
 		}
 	}
 
+	/* === Генератор ID === */
 	function* generateId() {
 	    let n = 1;
 	    while (true) {

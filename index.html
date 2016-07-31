@@ -3,10 +3,11 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Lodash</title>
+	<link rel="stylesheet" href="dist/styles/style.min.css">
 </head>
 <body>
-	<ul id="minify-table" style="display: none;"></ul>
-	<table id="city_table" style="display: block;">
+	<ul id="minifyTable" class="hidden"></ul>
+	<table id="cityTable">
 		<thead>
 			<tr>
 				<th class="id_city">ID</th>
@@ -15,16 +16,16 @@
 				<th class="count-houses_city">Count of houses</th>
 			</tr>
 		</thead>
-		<tbody id="city_table__body"></tbody>
+		<tbody id="cityTableBody"></tbody>
 	</table>
 	<div class="control-panel">
-		<button class="minify-btn">Compact version</button><button class="find-min">Find min</button><button class="find-max">Find max</button>
+		<button id="minify-btn">Compact version</button><button id="find-min">Find min</button><button id="find-max">Find max</button>
 	</div>
-	<form id="add-element">
-		<input type="text" class="form-city" placeholder="city">
-		<input type="text" class="form-street" placeholder="street">
-		<input type="text" class="form-count-houses" placeholder="count-houses">
-		<input type="submit" value="Add element">
+	<form id="addElement">
+		<input type="text" id="form-city" placeholder="city">
+		<input type="text" id="form-street" placeholder="street">
+		<input type="text" id="form-count-houses" placeholder="count-houses">
+		<input id="addCity" type="submit" value="Add element">
 	</form>
 	<script type="text/template" id="template" style="display: none;">
 		<% _.forEach(items, function(item) { %> 
@@ -39,7 +40,7 @@
 				</tr>
 		<% }); %>
 	</script>
-	<script type="text/template" id="template-minify" style="display: none;">
+	<script type="text/template" id="templateMinify" style="display: none;">
 		<% _.forEach(items, function(item) { %>
 			<li><%-item.name%>, <%-item.street%> - <%-item.countHouses%></li>
 		<% }); %>

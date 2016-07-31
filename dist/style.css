@@ -27,3 +27,12 @@
   padding-right: 0;
   padding-left: 0;
 }
+.min {
+  background-color: pink;
+}
+.max {
+  background-color: green;
+}
+.hidden {
+  display: none;
+}
