@@ -91,12 +91,13 @@
     /* ================ =============== ================ */
 
     painter.refresh();        // отрисовываем таблицу
-    removeBtnsAddListener();  // навешиваем обработчик на кнопки "Remove"
 
     let minBtn = document.getElementById('find-min'),
         maxBtn = document.getElementById('find-max'),
         addBtn = document.getElementById('addCity'),
-        minifyBtn = document.getElementById('minify-btn');
+        minifyBtn = document.getElementById('minify-btn'),
+        minTable = document.getElementById('minifyTable'),
+        fullTable = document.getElementById('cityTable');
 
     /* === Навешиваем обработчики на кнопки === */
     minBtn.addEventListener("click", (event) => {
@@ -113,13 +114,10 @@
         event.preventDefault();
         manager.addCity();
         painter.refresh();
-        removeBtnsAddListener();
     });
 
     minifyBtn.addEventListener("click", (event) => {
         event.preventDefault();
-        let minTable = document.getElementById('minifyTable'),
-            fullTable = document.getElementById('cityTable');
         if (!event.target.classList.contains('minify')) {
             event.target.classList.add('minify');
             event.target.innerHTML = 'Full version';
@@ -136,21 +134,21 @@
             maxBtn.classList.remove('hidden');
         }
         painter.refresh();
-        removeBtnsAddListener();
     });
     
-    
-    function removeBtnsAddListener() {
-        let removeBtns = document.getElementsByClassName('remove-btn');
-        for(let i=0; i<removeBtns.length; i++) {
-            removeBtns[i].addEventListener('click', (event) => {
+    /* === Обработчик для кнопок REMOVE === */
+    fullTable.addEventListener('click', (event) => {
+        let target = event.target;
+        while (target.tagName !== 'TABLE') {
+            if (target.tagName === 'BUTTON' && target.classList.contains('remove-btn')) {
                 event.preventDefault();
-                manager.removeCity(+event.target.parentElement.parentElement.id);
+                manager.removeCity(+target.parentElement.parentElement.id);
                 painter.refresh();
-                removeBtnsAddListener();
-            });
+                return;
+            }
+            target = target.parentNode;
         }
-    }
+    });
 
     /* === Генератор ID === */
     function* generateId() {
