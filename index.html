@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Lodash</title>
+</head>
+<body>
+	<ul id="minify-table" style="display: none;"></ul>
+	<table id="city_table" style="display: block;">
+		<thead>
+			<tr>
+				<th class="id_city">ID</th>
+				<th class="name_city">City</th>
+				<th class="street_city">Street</th>
+				<th class="count-houses_city">Count of houses</th>
+			</tr>
+		</thead>
+		<tbody id="city_table__body"></tbody>
+	</table>
+	<div class="control-panel">
+		<button class="minify-btn">Compact version</button><button class="find-min">Find min</button><button class="find-max">Find max</button>
+	</div>
+	<form id="add-element">
+		<input type="text" class="form-city" placeholder="city">
+		<input type="text" class="form-street" placeholder="street">
+		<input type="text" class="form-count-houses" placeholder="count-houses">
+		<input type="submit" value="Add element">
+	</form>
+	<script type="text/template" id="template" style="display: none;">
+		<% _.forEach(items, function(item) { %> 
+				<tr id="<%-item.id%>">
+					<td class="id_city"><%-item.id%></td>
+					<td class="name_city"><%-item.name%></td>
+					<td class="street_city"><%-item.street%></td>
+					<td class="count-houses_city"><%-item.countHouses%></td>
+					<td class="remove-col">
+						<button class="remove-btn">Remove</button>
+					</td>
+				</tr>
+		<% }); %>
+	</script>
+	<script type="text/template" id="template-minify" style="display: none;">
+		<% _.forEach(items, function(item) { %>
+			<li><%-item.name%>, <%-item.street%> - <%-item.countHouses%></li>
+		<% }); %>
+	</script>
+	<script src="libs/lodash.lib.js"></script>
+	<script src="src/scripts/main-es6.js"></script>
+</body>
+</html>
