@@ -3,8 +3,8 @@
 
     /* ================== Begin Classes ================== */
     class Painter {
-        constructor(arrOfCities) {
-            this.arrOfCities = arrOfCities;
+        constructor() {
+            this.arrOfCities = [];
         }
         refresh() { // Перерисовка шаблона
             let templateHtml = document.getElementById('template').innerHTML,
@@ -21,14 +21,17 @@
                 minTable.innerHTML = compiledMinify({items: this.arrOfCities});
             }
         } // refresh
+        set(arrOfCities = []) {
+            this.arrOfCities = arrOfCities;
+        }
     }
 
     class CitiesManager {
-        constructor(arrOfCities = []) {
-            this.arrOfCities = arrOfCities;
+        constructor() {
+            this.arrOfCities = [];
         }
         addCity(nameArg, streetArg, countHousesArg) {
-            let id = genId.next().value,
+            let id = this.genId(),
                 name = nameArg || document.getElementById('form-city').value,
                 street = streetArg || document.getElementById('form-street').value,
                 countHouses = countHousesArg || document.getElementById('form-count-houses').value;
@@ -67,6 +70,22 @@
         get() {
             return this.arrOfCities;
         }
+        set(arrOfCities = []) {
+            let length = arrOfCities.length;
+            if (length !== 0) {
+                this.arrOfCities = arrOfCities;
+                this.genId = this.generateId(this.arrOfCities[length-1].id + 1);
+            } else {
+                this.genId = this.generateId();
+            }
+        }
+        /* === Генератор ID === */
+        generateId(nowId = 1) {
+            let n = nowId;
+            return function() {
+                return n++;
+            }
+        }
     }
 
     class City {
@@ -79,18 +98,45 @@
     }
     /* ==================== End Classes ==================== */
 
-    let genId = generateId(),                   // создаем генератор
-        manager = new CitiesManager(),          // создаем объект класса CityManager
-        painter = new Painter(manager.get());   // создаем объект класса Painter
+    let dataManager = {
+        arrOfCities: [],
+        httpGet() {
+            fetch('https://cities-manager.firebaseio.com/cities.json', {method: 'GET'})
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    if (data) { this.arrOfCities = data.slice(); } 
+                    console.log(this.arrOfCities);
+                    return this.arrOfCities;
+                })
+                .then(arr => {
+                    manager.set(arr);
+                    painter.set(arr);
+                    painter.refresh();
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        httpPut(arr) {
+            fetch('https://cities-manager.firebaseio.com/cities.json', {method: 'PUT', body: JSON.stringify(arr)})
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+    }
 
+    let manager = new CitiesManager(),    // создаем объект класса CityManager
+        painter = new Painter();          // создаем объект класса Painter
+
+    dataManager.httpGet();                // получаем данные с сервера
 
     /* ================ Тестовые данные ================ */
-    manager.addCity('Samara', 'Lenina', 45);
-    manager.addCity('Togliatti', 'Zavodskaya', 67);
-    manager.addCity('Chapaevsk', 'Zheleznodorozhnaya', 37);
+    // manager.addCity('Samara', 'Lenina', 45);
+    // manager.addCity('Togliatti', 'Zavodskaya', 67);
+    // manager.addCity('Chapaevsk', 'Zheleznodorozhnaya', 37);
     /* ================ =============== ================ */
-
-    painter.refresh();        // отрисовываем таблицу
 
     let minBtn = document.getElementById('find-min'),
         maxBtn = document.getElementById('find-max'),
@@ -113,6 +159,7 @@
     addBtn.addEventListener("click", (event) => {
         event.preventDefault();
         manager.addCity();
+        dataManager.httpPut(manager.get());
         painter.refresh();
     });
 
@@ -143,19 +190,12 @@
             if (target.tagName === 'BUTTON' && target.classList.contains('remove-btn')) {
                 event.preventDefault();
                 manager.removeCity(+target.parentElement.parentElement.id);
+                dataManager.httpPut(manager.get());
                 painter.refresh();
                 return;
             }
             target = target.parentNode;
         }
     });
-
-    /* === Генератор ID === */
-    function* generateId() {
-        let n = 1;
-        while (true) {
-            yield n++;
-        }
-    }
 
 })();
