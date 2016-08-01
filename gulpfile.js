@@ -49,8 +49,9 @@ gulp.task('scripts', function() {
         .pipe(gulp.dest('dist')); // Выгружаем в папку
 });
 
-gulp.task('watch', ['less', 'babel', 'scripts', 'browser-sync'], function() {
-	gulp.watch('src/less/**/*.less', ['less']);
+gulp.task('watch', ['less', 'minify-css', /*'babel', 'scripts',*/ 'browser-sync'], function() {
+	gulp.watch('src/styles/**/*.less', ['less']);
+    gulp.watch('dist/style.css', ['minify-css']);
 	gulp.watch('src/scripts/**/*.js', ['babel']);
 	gulp.watch('*.html', browserSync.reload); // Наблюдение за HTML файлами в корне проекта
     gulp.watch('dist/scripts/**/*.js', ['scripts', browserSync.reload]); // Наблюдение за JS файлами в папке js

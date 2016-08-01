@@ -3,30 +3,37 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Lodash</title>
+	<link rel="stylesheet" href="libs/bootstrap.min.css">
 	<link rel="stylesheet" href="dist/styles/style.min.css">
 </head>
 <body>
-	<ul id="minifyTable" class="hidden"></ul>
-	<table id="cityTable">
-		<thead>
-			<tr>
-				<th class="id_city">ID</th>
-				<th class="name_city">City</th>
-				<th class="street_city">Street</th>
-				<th class="count-houses_city">Count of houses</th>
-			</tr>
-		</thead>
-		<tbody id="cityTableBody"></tbody>
-	</table>
-	<div class="control-panel">
-		<button id="minify-btn">Compact version</button><button id="find-min">Find min</button><button id="find-max">Find max</button>
+	<div class="container">
+		<div class="row">
+			<h2>Cities Table</h2>
+			<ul id="minifyTable" class="hidden"></ul>
+			<table id="cityTable" class="city-table table table-bordered">
+				<thead>
+					<tr>
+						<th class="id_city">ID</th>
+						<th class="name_city">City</th>
+						<th class="street_city">Street</th>
+						<th class="count-houses_city">Count of houses</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="cityTableBody"></tbody>
+			</table>
+			<div class="control-panel">
+				<button id="minify-btn">Compact version</button><button id="find-min">Find min</button><button id="find-max">Find max</button>
+			</div>
+			<form id="addElement">
+				<input type="text" id="form-city" placeholder="city">
+				<input type="text" id="form-street" placeholder="street">
+				<input type="text" id="form-count-houses" placeholder="count-houses">
+				<input id="addCity" type="submit" value="Add element">
+			</form>
+		</div>
 	</div>
-	<form id="addElement">
-		<input type="text" id="form-city" placeholder="city">
-		<input type="text" id="form-street" placeholder="street">
-		<input type="text" id="form-count-houses" placeholder="count-houses">
-		<input id="addCity" type="submit" value="Add element">
-	</form>
 	<script type="text/template" id="template" style="display: none;">
 		<% _.forEach(items, function(item) { %> 
 				<tr id="<%-item.id%>">
@@ -46,6 +53,6 @@
 		<% }); %>
 	</script>
 	<script src="libs/lodash.lib.js"></script>
-	<script src="src/scripts/main-es6.js"></script>
+	<script src="dist/scripts/main-es5.js"></script>
 </body>
 </html>

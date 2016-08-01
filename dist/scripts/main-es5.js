@@ -5,197 +5,242 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 ;(function () {
-	'use strict';
+    'use strict';
 
-	var _marked = [generateId].map(regeneratorRuntime.mark);
+    /* ================== Begin Classes ================== */
 
-	var Painter = function () {
-		function Painter(arrOfCities) {
-			_classCallCheck(this, Painter);
+    var Painter = function () {
+        function Painter() {
+            _classCallCheck(this, Painter);
 
-			this.arrOfCities = arrOfCities;
-		}
+            this.arrOfCities = [];
+        }
 
-		_createClass(Painter, [{
-			key: 'refresh',
-			value: function refresh() {
-				var templateHtml = document.getElementById('template').innerHTML,
-				    templateHtmlMinify = document.getElementById('template-minify').innerHTML,
-				    compiled = _.template(templateHtml),
-				    compiledMinify = _.template(templateHtmlMinify);
-				if (document.getElementById('minify-table').style.display === 'none' && document.getElementById('city_table').style.display === 'block') {
-					document.getElementById("city_table__body").innerHTML = compiled({ items: this.arrOfCities });
-				} else {
-					document.getElementById("minify-table").innerHTML = compiledMinify({ items: this.arrOfCities });
-				}
-			}
-		}]);
+        _createClass(Painter, [{
+            key: 'refresh',
+            value: function refresh() {
+                // Перерисовка шаблона
+                var templateHtml = document.getElementById('template').innerHTML,
+                    templateHtmlMinify = document.getElementById('templateMinify').innerHTML,
+                    compiled = _.template(templateHtml),
+                    compiledMinify = _.template(templateHtmlMinify),
+                    minTable = document.getElementById('minifyTable'),
+                    fullTable = document.getElementById('cityTable'),
+                    tableBody = document.getElementById("cityTableBody");
 
-		return Painter;
-	}();
+                if (minTable.classList.contains('hidden') && !fullTable.classList.contains('hidden')) {
+                    tableBody.innerHTML = compiled({ items: this.arrOfCities });
+                } else {
+                    minTable.innerHTML = compiledMinify({ items: this.arrOfCities });
+                }
+            } // refresh
 
-	var CitiesManager = function () {
-		function CitiesManager() {
-			var arrOfCities = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+        }, {
+            key: 'set',
+            value: function set() {
+                var arrOfCities = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 
-			_classCallCheck(this, CitiesManager);
+                this.arrOfCities = arrOfCities;
+            }
+        }]);
 
-			this.arrOfCities = arrOfCities;
-		}
+        return Painter;
+    }();
 
-		_createClass(CitiesManager, [{
-			key: 'addCity',
-			value: function addCity(nameArg, streetArg, countHousesArg) {
-				var id = genId.next().value,
-				    name = nameArg || document.querySelector(".form-city").value,
-				    street = streetArg || document.querySelector(".form-street").value,
-				    countHouses = countHousesArg || document.querySelector(".form-count-houses").value;
+    var CitiesManager = function () {
+        function CitiesManager() {
+            _classCallCheck(this, CitiesManager);
 
-				var newCity = new City(id, name, street, countHouses);
+            this.arrOfCities = [];
+        }
 
-				this.arrOfCities.push(newCity);
-			}
-		}, {
-			key: 'removeCity',
-			value: function removeCity(id) {
-				this.arrOfCities.forEach(function (item, index, arr) {
-					item.id === id ? arr.splice(index, 1) : false;
-				});
-			}
-		}, {
-			key: 'findMin',
-			value: function findMin() {
-				var min = this.arrOfCities[0].countHouses,
-				    minId = this.arrOfCities[0].id;
-				this.arrOfCities.forEach(function (item, index, arr) {
-					if (arr[index].countHouses < min) {
-						min = arr[index].countHouses;
-						minId = arr[index].id;
-					}
-				});
-				document.getElementById('' + minId).style.background = 'pink';
-			}
-		}, {
-			key: 'findMax',
-			value: function findMax() {
-				var max = this.arrOfCities[0].countHouses,
-				    maxId = this.arrOfCities[0].id;
-				this.arrOfCities.forEach(function (item, index, arr) {
-					if (arr[index].countHouses > max) {
-						max = arr[index].countHouses;
-						maxId = arr[index].id;
-					}
-				});
-				document.getElementById('' + maxId).style.background = 'green';
-			}
-		}, {
-			key: 'get',
-			value: function get() {
-				return this.arrOfCities;
-			}
-		}]);
+        _createClass(CitiesManager, [{
+            key: 'addCity',
+            value: function addCity(nameArg, streetArg, countHousesArg) {
+                var id = this.genId(),
+                    name = nameArg || document.getElementById('form-city').value,
+                    street = streetArg || document.getElementById('form-street').value,
+                    countHouses = countHousesArg || document.getElementById('form-count-houses').value;
 
-		return CitiesManager;
-	}();
+                var newCity = new City(id, name, street, countHouses);
 
-	var City = function City(id, name, street, countHouses) {
-		_classCallCheck(this, City);
+                this.arrOfCities.push(newCity);
+            }
+        }, {
+            key: 'removeCity',
+            value: function removeCity(id) {
+                this.arrOfCities.forEach(function (item, index, arr) {
+                    item.id === id ? arr.splice(index, 1) : false;
+                });
+            }
+        }, {
+            key: 'findMin',
+            value: function findMin() {
+                var min = this.arrOfCities[0].countHouses,
+                    minId = this.arrOfCities[0].id;
+                this.arrOfCities.forEach(function (item, index, arr) {
+                    if (arr[index].countHouses < min) {
+                        min = arr[index].countHouses;
+                        minId = arr[index].id;
+                    }
+                });
+                document.getElementById('' + minId).classList.add('min');
+            }
+        }, {
+            key: 'findMax',
+            value: function findMax() {
+                var max = this.arrOfCities[0].countHouses,
+                    maxId = this.arrOfCities[0].id;
+                this.arrOfCities.forEach(function (item, index, arr) {
+                    if (arr[index].countHouses > max) {
+                        max = arr[index].countHouses;
+                        maxId = arr[index].id;
+                    }
+                });
+                document.getElementById('' + maxId).classList.add('max');
+            }
+        }, {
+            key: 'get',
+            value: function get() {
+                return this.arrOfCities;
+            }
+        }, {
+            key: 'set',
+            value: function set() {
+                var arrOfCities = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 
-		this.id = id;
-		this.name = name;
-		this.street = street;
-		this.countHouses = countHouses;
-	};
+                var length = arrOfCities.length;
+                if (length !== 0) {
+                    this.arrOfCities = arrOfCities;
+                    this.genId = this.generateId(this.arrOfCities[length - 1].id + 1);
+                } else {
+                    this.genId = this.generateId();
+                }
+            }
+            /* === Генератор ID === */
 
-	var genId = generateId();
+        }, {
+            key: 'generateId',
+            value: function generateId() {
+                var nowId = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
 
-	var test = new CitiesManager();
+                var n = nowId;
+                return function () {
+                    return n++;
+                };
+            }
+        }]);
 
-	var painter = new Painter(test.get());
+        return CitiesManager;
+    }();
 
-	test.addCity('Samara', 'Lenina', 45);
-	test.addCity('Togliatti', 'Zavodskaya', 67);
-	test.addCity('Chapaevsk', 'Zheleznodorozhnaya', 37);
+    var City = function City(id, name, street, countHouses) {
+        _classCallCheck(this, City);
 
-	painter.refresh();
-	addEvent();
+        this.id = id;
+        this.name = name;
+        this.street = street;
+        this.countHouses = countHouses;
+    };
+    /* ==================== End Classes ==================== */
 
-	var minBtn = document.querySelector('.find-min'),
-	    maxBtn = document.querySelector('.find-max');
+    var dataManager = {
+        arrOfCities: [],
+        httpGet: function httpGet() {
+            var _this = this;
 
-	minBtn.addEventListener("click", function (event) {
-		event.preventDefault();
-		test.findMin();
-	});
+            fetch('https://cities-manager.firebaseio.com/cities.json', { method: 'GET' }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                if (data) {
+                    _this.arrOfCities = data.slice();
+                }
+                console.log(_this.arrOfCities);
+                return _this.arrOfCities;
+            }).then(function (arr) {
+                manager.set(arr);
+                painter.set(arr);
+                painter.refresh();
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        httpPut: function httpPut(arr) {
+            fetch('https://cities-manager.firebaseio.com/cities.json', { method: 'PUT', body: JSON.stringify(arr) }).catch(function (error) {
+                console.log(error);
+            });
+        }
+    };
 
-	maxBtn.addEventListener("click", function (event) {
-		event.preventDefault();
-		test.findMax();
-	});
+    var manager = new CitiesManager(),
+        // создаем объект класса CityManager
+    painter = new Painter(); // создаем объект класса Painter
 
-	var addBtn = document.querySelector("#add-element input[type=submit]");
-	addBtn.addEventListener("click", function (event) {
-		event.preventDefault();
-		test.addCity();
-		painter.refresh();
-		addEvent();
-	});
+    dataManager.httpGet(); // получаем данные с сервера
 
-	var minifyBtn = document.querySelector('.minify-btn');
-	minifyBtn.addEventListener("click", function (event) {
-		event.preventDefault();
-		if (this.innerHTML === 'Compact version') {
-			this.innerHTML = 'Full version';
-			document.getElementById('minify-table').style.display = 'block';
-			document.getElementById('city_table').style.display = 'none';
-		} else {
-			this.innerHTML = 'Compact version';
-			document.getElementById('minify-table').style.display = 'none';
-			document.getElementById('city_table').style.display = 'block';
-		}
-		painter.refresh();
-		addEvent();
-	});
+    /* ================ Тестовые данные ================ */
+    // manager.addCity('Samara', 'Lenina', 45);
+    // manager.addCity('Togliatti', 'Zavodskaya', 67);
+    // manager.addCity('Chapaevsk', 'Zheleznodorozhnaya', 37);
+    /* ================ =============== ================ */
 
-	function addEvent() {
-		var removeBtns = document.getElementsByClassName('remove-btn');
+    var minBtn = document.getElementById('find-min'),
+        maxBtn = document.getElementById('find-max'),
+        addBtn = document.getElementById('addCity'),
+        minifyBtn = document.getElementById('minify-btn'),
+        minTable = document.getElementById('minifyTable'),
+        fullTable = document.getElementById('cityTable');
 
-		for (var i = 0; i < removeBtns.length; i++) {
-			removeBtns[i].addEventListener('click', function (event) {
-				event.preventDefault();
-				test.removeCity(+this.parentElement.parentElement.id);
-				painter.refresh();
-				addEvent();
-			});
-		}
-	}
+    /* === Навешиваем обработчики на кнопки === */
+    minBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        manager.findMin();
+    });
 
-	function generateId() {
-		var n;
-		return regeneratorRuntime.wrap(function generateId$(_context) {
-			while (1) {
-				switch (_context.prev = _context.next) {
-					case 0:
-						n = 1;
+    maxBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        manager.findMax();
+    });
 
-					case 1:
-						if (!true) {
-							_context.next = 6;
-							break;
-						}
+    addBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        manager.addCity();
+        dataManager.httpPut(manager.get());
+        painter.refresh();
+    });
 
-						_context.next = 4;
-						return n++;
+    minifyBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        if (!event.target.classList.contains('minify')) {
+            event.target.classList.add('minify');
+            event.target.innerHTML = 'Full version';
+            minTable.classList.remove('hidden');
+            fullTable.classList.add('hidden');
+            minBtn.classList.add('hidden');
+            maxBtn.classList.add('hidden');
+        } else {
+            event.target.classList.remove('minify');
+            event.target.innerHTML = 'Compact version';
+            minTable.classList.add('hidden');
+            fullTable.classList.remove('hidden');
+            minBtn.classList.remove('hidden');
+            maxBtn.classList.remove('hidden');
+        }
+        painter.refresh();
+    });
 
-					case 4:
-						_context.next = 1;
-						break;
-
-					case 6:
-					case 'end':
-						return _context.stop();
-				}
-			}
-		}, _marked[0], this);
-	}
+    /* === Обработчик для кнопок REMOVE === */
+    fullTable.addEventListener('click', function (event) {
+        var target = event.target;
+        while (target.tagName !== 'TABLE') {
+            if (target.tagName === 'BUTTON' && target.classList.contains('remove-btn')) {
+                event.preventDefault();
+                manager.removeCity(+target.parentElement.parentElement.id);
+                dataManager.httpPut(manager.get());
+                painter.refresh();
+                return;
+            }
+            target = target.parentNode;
+        }
+    });
 })();
