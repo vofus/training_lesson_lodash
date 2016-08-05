@@ -34,7 +34,7 @@
             let id = this.genId(),
                 name = nameArg || document.getElementById('form-city').value,
                 street = streetArg || document.getElementById('form-street').value,
-                countHouses = countHousesArg || document.getElementById('form-count-houses').value;
+                countHouses = countHousesArg || Number(document.getElementById('form-count-houses').value);
             
             let newCity = new City(id, name, street, countHouses);
 
