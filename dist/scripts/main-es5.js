@@ -60,7 +60,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var id = this.genId(),
                     name = nameArg || document.getElementById('form-city').value,
                     street = streetArg || document.getElementById('form-street').value,
-                    countHouses = countHousesArg || Number(document.getElementById('form-count-houses').value);
+                    countHouses = countHousesArg || parseInt(document.getElementById('form-count-houses').value);
 
                 var newCity = new City(id, name, street, countHouses);
 
